@@ -38,7 +38,13 @@ class Hand
 
   def combined_with hand
     combined_cards = cards + hand.cards
-    self.class.new(*combined_cards)
+    new_hands = []
+    combined_cards.combination(5).each do |five_cards|
+      new_hand = Hand.new
+      five_cards.each {|card| new_hand << card }
+      new_hands << new_hand
+    end
+    new_hands
   end
 
   def name

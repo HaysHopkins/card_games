@@ -48,14 +48,15 @@ class TexasHoldemDealer
   end
 
   def determine_winner
-    #examine each hand 
     winning_player = @table
     winning_hand = @table.hand
     @currently_in_game.each do |player|
-      combined_hand = player.combined_hand_with @table
-      if combined_hand > winning_hand
-        winning_player = player
-        winning_hand = combined_hand
+      combinations = player.combined_hand_with(@table)
+      combinations.each do |player_hand|
+        if player_hand > winning_hand
+          winning_player = player
+          winning_hand = player_hand
+        end
       end
     end
     award = @pot.award_pot winning_player
