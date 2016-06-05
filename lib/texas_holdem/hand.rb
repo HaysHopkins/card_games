@@ -36,6 +36,7 @@ class Hand
     cards << card
   end
 
+  # May parameterize this to work with different amounts of cards
   def combined_with hand
     combined_cards = cards + hand.cards
     new_hands = []
