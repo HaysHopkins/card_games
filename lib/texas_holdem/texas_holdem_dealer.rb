@@ -1,15 +1,16 @@
 require_relative './pot'
-require_relative './hand_evaluator'
 require_relative './deck'
 require_relative './player'
+require_relative './poker_calculator.rb'
 
 class TexasHoldemDealer
   def initialize players
-    @players = players
+    @players = players.dup
+    @currently_in_game = players.dup
     @deck = Deck.new
     @table = Player.new 'Table'
     @pot = Pot.new
-    @currently_in_game = players
+  #@pc = PokerCalculator.new
   end
 
   def play_game
@@ -19,9 +20,11 @@ class TexasHoldemDealer
     the_river
     puts '*******'
     determine_winner
+    puts '*******'
+    play_again?
   end
 
-  private
+  #private
 
   def hole_cards
     @deck.deal 2, *@currently_in_game
@@ -62,6 +65,32 @@ class TexasHoldemDealer
     award = @pot.award_pot winning_player
     hand_name = winning_hand.name
     puts "#{winning_player.name} wins #{award} with #{hand_name}."
+    puts "Current Chip Count:"
+    @players.each do |player|
+      puts "#{player.name}: #{player.chips} chips"
+    end
+  end
+
+
+  # Implement the small and big blind (think about starting chip amount and bet sizes to make sure game can continue for a decent time period)
+  def play_again?
+    input = ''
+
+    while(input != 'yes' && input != 'no')
+      puts "Would you like to play again: 'Yes' or 'No'?"
+      input = $stdin.gets.strip.downcase
+    end
+
+    if input == 'yes'
+      @currently_in_game = @players.dup
+      @currently_in_game.each do |player|
+        player.clear_hand
+      end
+      @table = Player.new 'Table'
+      play_game
+    else
+      puts 'Goodbye'
+    end
   end
 
   def display_cards
@@ -73,8 +102,7 @@ class TexasHoldemDealer
 
 
 
-          ### --- Betting --- ###
-
+    ### --- Betting --- ###
 
   def bet
     manage_betting_order
@@ -82,41 +110,53 @@ class TexasHoldemDealer
 
   def manage_betting_order
     bets, checks_or_calls = 0, 0
-    while @currently_in_game.size > 1 && bets + checks_or_calls < @currently_in_game.size
-      player = @currently_in_game.shift
+    betting_order = @currently_in_game.dup
+
+    #odds_array = get_odds_array(betting_order)
+
+    while betting_order.size > 1 && bets + checks_or_calls < betting_order.size
+      player = betting_order.shift # THIS IS WHERE THE ORDER IS BEING CHANGED, MAYBE USE A TEMPORARY COPY OF C_I_G INSTEAD?
       player_bet = get_bet_value(player)
+      
       if player_bet.is_a?(Fixnum)
         bets, checks_or_calls = 1, 0
-        @pot.total_bet += player.get_chips(player_bet)
+        total_due = (@pot.current_bet - player.current_bet) + player_bet
+        @pot.pot += player.get_chips(total_due)
+        @pot.current_bet += player_bet
+        player.current_bet = @pot.current_bet
       elsif player_bet == "fold"
+        @currently_in_game.delete(player)
         next
       elsif player_bet == "check"
         checks_or_calls += 1
       else
         checks_or_calls += 1
-        bet = player.get_chips(@pot.total_bet-player.current_bet)
-        @pot.add_to_pot(bet)
+        total_due = player.get_chips(@pot.current_bet - player.current_bet)
+        @pot.add_to_pot(total_due)
+        player.current_bet = @pot.current_bet
       end
-      @currently_in_game.push(player)
+      betting_order.push(player)
     end
+
     reset_bets
   end
 
   def get_bet_value(player)
     bet = 0
+
     while true
       response = get_bet(player)
       if response == "fold"
         break
       elsif response == "check"
-        if @pot.total_bet > player.current_bet
+        if @pot.current_bet > player.current_bet
           puts "Incorrect input"
           next
         else
           break
         end
       elsif response == "call"
-        if @pot.total_bet == 0
+        if @pot.current_bet == 0
           puts "Incorrect input"
           next
         else
@@ -127,9 +167,8 @@ class TexasHoldemDealer
       if bet < @pot.min_bet || bet > @pot.max_bet
         next
       elsif bet > 0
-        #Will need to alter this later for side pots
-        #Should I wait to add to the pot?
-        if bet > player.chips #THIS IS WHERE SIDEBETS WOULD COME INTO PLAY
+        # Will need to alter this later for side pots
+        if bet > player.chips
           return "fold"
         else
           return bet
@@ -144,10 +183,10 @@ class TexasHoldemDealer
 
   def get_bet(player)
     if player.current_bet > 0
-      puts "#{player.name}: Would you like to 'Call' the raise of #{@pot.total_bet - player.current_bet}, re-raise ('#{@pot.min_bet} - #{@pot.max_bet}') or 'Fold'?"
+      puts "#{player.name}: Would you like to 'Call' the raise of #{@pot.current_bet - player.current_bet}, re-raise ('#{@pot.min_bet} - #{@pot.max_bet}') or 'Fold'?"
       input = $stdin.gets.strip.downcase
-    elsif player.current_bet == 0 && @pot.total_bet > 0
-      puts "#{player.name}: Would you like to 'Call' the bet of #{@pot.total_bet - player.current_bet}, raise ('#{@pot.min_bet} - #{@pot.max_bet}'), or 'Fold'?"
+    elsif player.current_bet == 0 && @pot.current_bet > 0
+      puts "#{player.name}: Would you like to 'Call' the bet of #{@pot.current_bet - player.current_bet}, raise ('#{@pot.min_bet} - #{@pot.max_bet}'), or 'Fold'?"
       input = $stdin.gets.strip.downcase
     elsif player.current_bet == 0
       puts "#{player.name}: Would you like to bet ('#{@pot.min_bet} - #{@pot.max_bet}'), 'Check', 'Fold'?"
@@ -157,8 +196,31 @@ class TexasHoldemDealer
     end
   end
 
+  # IF THE SMALL BLIND FOLDS, I NEED TO FIGURE OUT WHO IS UP IN THE BETTING ORDER WITHOUT
+  # CHANGING THE PLAYERS LIST WHICH TRACKS THE BETTING ORDER PROGRESSION AT THE BEGINNING OF EACH ROUND
   def reset_bets
-    @pot.total_bet = 0
+    @pot.current_bet = 0
     @players.each { |player| player.reset_bet }
   end
+
+
+
+  def get_odds_array()
+    game = []
+
+    @players.each do |player|
+      arr = player.hand.cards
+      game << arr
+    end
+    puts game.to_s #, @table.hand.cards, []
+
+  end
 end
+
+names = %w(Hays Computer\ 1 Computer\ 2 Computer\ 3)
+players = names.map { |name| Player.new name }
+game = TexasHoldemDealer.new players
+game.hole_cards
+game.the_flop
+game.get_odds_array
+
