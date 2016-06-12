@@ -3,7 +3,7 @@ class Card
 
   class << self
     def face_displays
-      Hash[faces.zip %w(2 3 4 5 6 7 8 9 10 J Q K A)]
+      Hash[faces.zip %w(2 3 4 5 6 7 8 9 T J Q K A)]
     end
 
     def face_values

@@ -20,13 +20,10 @@ class PokerCalculator
     @outcome = Array.new(10) { Array.new(11) { 0 }}
     @aflag = Array.new(52) { false }
     @player_count = 0
-    #puts "Generating Structures."
+    puts "Preparing Super Poker Hand Analysis"
 
     @hand_rank = Array.new(2598960)
-
-    #puts "Preparing Data."
     prepare_data
-    #puts "Data Prepared."
   end
 
   def to_s
@@ -36,14 +33,19 @@ class PokerCalculator
   def output(player_set, community, folded)
     pcount = player_set.count
     pcards = player_set.collect { |p| [card_to_val(p[0]), card_to_val(p[1])] }
+    puts "Hello"
     ccards = (community || []).collect { |c| card_to_val(c) }
     fcards = (folded || []).collect { |f| card_to_val(f) }
     analyze_scenario(pcount, pcards, ccards, fcards)
   end
 
   def card_to_val(card)
-    card_val = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"].index(card[0])
+    card_val = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"].index(card[0])
+    puts "Card at index 0 is #{card[0]}"
+    puts "Card val is #{card_val}"
     suit_val = ["♣", "♦", "♥", "♠"].index(card[1])
+    puts "Card at index 0 is #{card[1]}"
+    puts "Suit val is #{suit_val}"
     return ((13*suit_val) + card_val)
   end
 

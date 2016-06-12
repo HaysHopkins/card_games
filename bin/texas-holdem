@@ -3,8 +3,19 @@ $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 
 require 'texas_holdem/player'
 require 'texas_holdem/texas_holdem_dealer'
+require 'texas_holdem/level_one'
+require 'texas_holdem/level_two'
 
-names = %w(Hays Computer\ 1 Computer\ 2 Computer\ 3)
-players = names.map { |name| Player.new name }
-game = TexasHoldemDealer.new players
+#names = %w(Hays Computer\ 1 Computer\ 2 Computer\ 3)
+#names.map { |name| Player.new name }
+players = []
+players << Player.new("Hays", false)
+players << Player.new("Computer 1", true)
+players << Player.new("Computer 2", true)
+players << Player.new("Computer 3", true)
+
+
+
+  
+game = TexasHoldemDealer.new players, LevelTwo.new
 game.play_game

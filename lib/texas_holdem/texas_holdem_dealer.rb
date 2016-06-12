@@ -4,13 +4,14 @@ require_relative './player'
 require_relative './poker_calculator.rb'
 
 class TexasHoldemDealer
-  def initialize players
+  def initialize players, level
     @players = players.dup
     @currently_in_game = players.dup
     @deck = Deck.new
-    @table = Player.new 'Table'
+    @table = Player.new 'Table', false
     @pot = Pot.new
-  #@pc = PokerCalculator.new
+    #@pc = PokerCalculator.new
+    @level = level
   end
 
   def play_game
@@ -77,7 +78,7 @@ class TexasHoldemDealer
     input = ''
 
     while(input != 'yes' && input != 'no')
-      puts "Would you like to play again: 'Yes' or 'No'?"
+      puts "Would you like to continue playing: 'Yes' or 'No'?"
       input = $stdin.gets.strip.downcase
     end
 
@@ -141,11 +142,17 @@ class TexasHoldemDealer
     reset_bets
   end
 
-  def get_bet_value(player)
-    bet = 0
+  def get_bet_value player
+    response = ""
 
     while true
-      response = get_bet(player)
+      
+      if player.is_computer?
+        response = get_computer_bet player
+      else
+        response = get_player_bet player
+      end
+
       if response == "fold"
         break
       elsif response == "check"
@@ -163,6 +170,7 @@ class TexasHoldemDealer
           break
         end
       end
+
       bet = response.match(/[0-9]*/).to_s.to_i
       if bet < @pot.min_bet || bet > @pot.max_bet
         next
@@ -178,10 +186,16 @@ class TexasHoldemDealer
         next
       end
     end
+
     response
   end
 
-  def get_bet(player)
+  def get_computer_bet
+    #USE IF STATEMENTS TO GET THE RIGHT METHOD HEADER (1 - NOTHING, 2- PLAYER CARDS, 3- ALL PLAYERS)
+    @level.get_bet player.hand.cards
+  end
+
+  def get_player_bet player
     if player.current_bet > 0
       puts "#{player.name}: Would you like to 'Call' the raise of #{@pot.current_bet - player.current_bet}, re-raise ('#{@pot.min_bet} - #{@pot.max_bet}') or 'Fold'?"
       input = $stdin.gets.strip.downcase
@@ -203,24 +217,29 @@ class TexasHoldemDealer
     @players.each { |player| player.reset_bet }
   end
 
-
-
-  def get_odds_array()
-    game = []
+  def get_odds_array
+    hands = []
+    table = []
+    folded = []
 
     @players.each do |player|
-      arr = player.hand.cards
-      game << arr
+      arr = []
+      player.hand.cards.each do |card|
+        arr << card.to_s
+      end
+      hands << arr
     end
-    puts game.to_s #, @table.hand.cards, []
-
+    @table.hand.cards.each do |card|
+      table << card.to_s
+    end
+    #puts @pc.output(hands, table, folded)
   end
 end
 
-names = %w(Hays Computer\ 1 Computer\ 2 Computer\ 3)
-players = names.map { |name| Player.new name }
-game = TexasHoldemDealer.new players
-game.hole_cards
-game.the_flop
-game.get_odds_array
+# names = %w(Hays Computer\ 1 Computer\ 2 Computer\ 3)
+# players = names.map { |name| Player.new name }
+# game = TexasHoldemDealer.new players
+# game.hole_cards
+# game.the_flop
+# game.get_odds_array
 
