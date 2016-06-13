@@ -1,16 +1,15 @@
 require_relative './pot'
 require_relative './deck'
 require_relative './player'
-require_relative './poker_calculator.rb'
 
 class TexasHoldemDealer
   def initialize players, level
     @players = players.dup
     @currently_in_game = players.dup
+    @currently_folded = []
     @deck = Deck.new
     @table = Player.new 'Table', false
     @pot = Pot.new
-    #@pc = PokerCalculator.new
     @level = level
   end
 
@@ -22,7 +21,7 @@ class TexasHoldemDealer
     puts '*******'
     determine_winner
     puts '*******'
-    play_again?
+    continue_playing?
   end
 
   #private
@@ -74,7 +73,7 @@ class TexasHoldemDealer
 
 
   # Implement the small and big blind (think about starting chip amount and bet sizes to make sure game can continue for a decent time period)
-  def play_again?
+  def continue_playing?
     input = ''
 
     while(input != 'yes' && input != 'no')
@@ -84,10 +83,11 @@ class TexasHoldemDealer
 
     if input == 'yes'
       @currently_in_game = @players.dup
+      @folded = 0
       @currently_in_game.each do |player|
         player.clear_hand
       end
-      @table = Player.new 'Table'
+      @table = Player.new 'Table', false
       play_game
     else
       puts 'Goodbye'
@@ -112,8 +112,11 @@ class TexasHoldemDealer
   def manage_betting_order
     bets, checks_or_calls = 0, 0
     betting_order = @currently_in_game.dup
-
-    #odds_array = get_odds_array(betting_order)
+    @level.set_odds_array(@currently_in_game, @table, @folded) unless @level.class != LevelThree
+    # puts "*****************"
+    # puts "The Odds At This Time Are: "
+    # puts @level.poker_odds
+    # puts "*****************"
 
     while betting_order.size > 1 && bets + checks_or_calls < betting_order.size
       player = betting_order.shift # THIS IS WHERE THE ORDER IS BEING CHANGED, MAYBE USE A TEMPORARY COPY OF C_I_G INSTEAD?
@@ -126,7 +129,8 @@ class TexasHoldemDealer
         @pot.current_bet += player_bet
         player.current_bet = @pot.current_bet
       elsif player_bet == "fold"
-        @currently_in_game.delete(player)
+        folded_player = @currently_in_game.delete(player)
+        @currently_folded << folded_player
         next
       elsif player_bet == "check"
         checks_or_calls += 1
@@ -148,9 +152,9 @@ class TexasHoldemDealer
     while true
       
       if player.is_computer?
-        response = get_computer_bet player
+        response = get_computer_bet(player)
       else
-        response = get_player_bet player
+        response = get_player_bet(player)
       end
 
       if response == "fold"
@@ -190,9 +194,14 @@ class TexasHoldemDealer
     response
   end
 
-  def get_computer_bet
-    #USE IF STATEMENTS TO GET THE RIGHT METHOD HEADER (1 - NOTHING, 2- PLAYER CARDS, 3- ALL PLAYERS)
-    @level.get_bet player.hand.cards
+  def get_computer_bet player
+    if @level.class == LevelOne
+      @level.get_bet
+    elsif @level.class == LevelTwo
+      @level.get_bet(player.hand.cards)
+    else
+      @level.get_bet(@currently_in_game.index(player))
+    end
   end
 
   def get_player_bet player
@@ -215,24 +224,6 @@ class TexasHoldemDealer
   def reset_bets
     @pot.current_bet = 0
     @players.each { |player| player.reset_bet }
-  end
-
-  def get_odds_array
-    hands = []
-    table = []
-    folded = []
-
-    @players.each do |player|
-      arr = []
-      player.hand.cards.each do |card|
-        arr << card.to_s
-      end
-      hands << arr
-    end
-    @table.hand.cards.each do |card|
-      table << card.to_s
-    end
-    #puts @pc.output(hands, table, folded)
   end
 end
 

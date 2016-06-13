@@ -6,12 +6,12 @@ class LevelTwo
 	@two_players = Hash.new
 	@three_players = Hash.new
 	@four_players = Hash.new
-	CSV.foreach("../assets/winning_perc_sheet.csv") do |row|
-	  puts "hello"
+	CSV.foreach('../assets/winning_perc_sheet.csv') do |row|
 	  @two_players[row[0]] = row[1]
 	  @three_players[row[0]] = row[2]
       @four_players[row[0]] = row[3]
     end
+    puts @four_players
   end
 
   def get_bet cards, players
@@ -53,3 +53,5 @@ class LevelTwo
   	end
   end
 end
+
+LevelTwo.new

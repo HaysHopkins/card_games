@@ -33,7 +33,6 @@ class PokerCalculator
   def output(player_set, community, folded)
     pcount = player_set.count
     pcards = player_set.collect { |p| [card_to_val(p[0]), card_to_val(p[1])] }
-    puts "Hello"
     ccards = (community || []).collect { |c| card_to_val(c) }
     fcards = (folded || []).collect { |f| card_to_val(f) }
     analyze_scenario(pcount, pcards, ccards, fcards)
@@ -41,11 +40,7 @@ class PokerCalculator
 
   def card_to_val(card)
     card_val = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"].index(card[0])
-    puts "Card at index 0 is #{card[0]}"
-    puts "Card val is #{card_val}"
     suit_val = ["♣", "♦", "♥", "♠"].index(card[1])
-    puts "Card at index 0 is #{card[1]}"
-    puts "Suit val is #{suit_val}"
     return ((13*suit_val) + card_val)
   end
 
@@ -340,16 +335,16 @@ private
   end
 end
 
-
-# t = Time.now
+#"A♠", "A♦", "3♦", "8♦"["♣", "♦", "♥", "♠"]
 # pc = PokerCalculator.new
-# puts Time.now - t
-# puts pc.output([ ["AH","JC"],
-#                  ["8H","TC"],
-#                  ["7D","7C"],
-#                  ["2C","4H"]],
-#                [ "AS", "AD", "3D", "8D"],
+# x = pc.output([ ["A♥","J♣"],
+#                  ["8♥","T♣"],
+#                  ["7♦","7♣"],
+#                  ["2♣","4♥"]],
+#                [],
 #                [])
-# puts Time.now - t
+# puts x
+# puts "Poker Odds for Player 1 (x[0]):"
+# puts x[0][:win_pct]
 
 
