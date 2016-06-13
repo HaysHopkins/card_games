@@ -1,6 +1,7 @@
 require_relative './pot'
 require_relative './deck'
 require_relative './player'
+require_relative './poker_calculator'
 
 class TexasHoldemDealer
   def initialize players, level
@@ -113,10 +114,10 @@ class TexasHoldemDealer
     bets, checks_or_calls = 0, 0
     betting_order = @currently_in_game.dup
     @level.set_odds_array(@currently_in_game, @table, @folded) unless @level.class != LevelThree
-    # puts "*****************"
-    # puts "The Odds At This Time Are: "
-    # puts @level.poker_odds
-    # puts "*****************"
+    puts "*****************"
+    puts "The Odds At This Time Are: "
+    puts @level.poker_odds
+    puts "*****************"
 
     while betting_order.size > 1 && bets + checks_or_calls < betting_order.size
       player = betting_order.shift # THIS IS WHERE THE ORDER IS BEING CHANGED, MAYBE USE A TEMPORARY COPY OF C_I_G INSTEAD?

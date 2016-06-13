@@ -4,7 +4,7 @@ class LevelOne
 		@bets = [["fold"], ["check"], ["call"], ["fold"], ["check"], ["call"], ["50"], ["100"], ["50", "100", "50", "100", "150", "200", "250", "300", "350", "400", "450", "500"]]
 	end
 
-	def get_bet cards
+	def get_bet
 		decision = @bets.sample()
 		decision.sample()
 	end

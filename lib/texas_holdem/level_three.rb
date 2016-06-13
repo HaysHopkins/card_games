@@ -1,5 +1,3 @@
-
-
 class LevelThree
   attr_accessor :poker_odds
 

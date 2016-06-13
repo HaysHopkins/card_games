@@ -6,7 +6,7 @@ class LevelTwo
 	@two_players = Hash.new
 	@three_players = Hash.new
 	@four_players = Hash.new
-	CSV.foreach('../assets/winning_perc_sheet.csv') do |row|
+	CSV.foreach('lib/assets/winning_perc_sheet.csv') do |row|
 	  @two_players[row[0]] = row[1]
 	  @three_players[row[0]] = row[2]
       @four_players[row[0]] = row[3]
