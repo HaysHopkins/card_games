@@ -1,17 +1,17 @@
 #!/usr/bin/env ruby
 puts $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+Dir.chdir(File.dirname(__FILE__))
 
 require 'texas_holdem/player'
 require 'texas_holdem/texas_holdem_dealer'
-require 'texas_holdem/level_one'
-require 'texas_holdem/level_two'
-require 'texas_holdem/level_three'
-
+puts "", ""
+puts "Enter your user name (Less than 10 characters -- we need to keep it pretty): "
+player_name = $stdin.gets.strip[0...10]
 
 players = []
-players << Player.new("Hays", false)
+players << Player.new(player_name, false)
 players << Player.new("Computer 1", true)
 players << Player.new("Computer 2", true)
 players << Player.new("Computer 3", true)
-game = TexasHoldemDealer.new players, LevelTwo.new
+game = TexasHoldemDealer.new(players)
 game.play_game

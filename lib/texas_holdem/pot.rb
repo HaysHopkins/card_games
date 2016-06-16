@@ -1,13 +1,11 @@
 class Pot
-  attr_accessor :pot, :current_bet
-  attr_reader :max_bet, :min_bet
+  attr_accessor :pot, :current_bet, :small_blind, :big_blind, :min_bet
 
   def initialize
     @pot = 0
-    @min_bet = 50
-    @max_bet = 500
-    @big_blind = 50
-    @small_blind =	25
+    @min_bet = 500
+    @big_blind = 500
+    @small_blind =	250
     @current_bet = 0
   end
 

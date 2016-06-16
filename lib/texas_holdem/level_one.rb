@@ -1,11 +1,14 @@
 class LevelOne
+	attr_accessor :level_goal
 
 	def initialize
-		@bets = [["fold"], ["check"], ["call"], ["fold"], ["check"], ["call"], ["50"], ["100"], ["50", "100", "50", "100", "150", "200", "250", "300", "350", "400", "450", "500"]]
+	  @level_goal = 40000
+	  @bets = [["fold", "check", "call"], ["fold"], ["check"], ["call"], ["check"], ["call"], ["500"], 
+	    ["750"], ["1000"], ["500", "750", "1000", "500", "750", "1000", "2000", "1000", "2000", "4000", "5000"]]
 	end
 
 	def get_bet
-		decision = @bets.sample()
-		decision.sample()
+	  decision = @bets.sample()
+	  decision.sample()
 	end
 end

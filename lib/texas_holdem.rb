@@ -9,3 +9,5 @@ require 'texas_holdem/level_one'
 require 'texas_holdem/level_two'
 require 'texas_holdem/level_three'
 require 'texas_holdem/poker_calculator'
+require 'texas_holdem/progress_bar'
+

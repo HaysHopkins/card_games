@@ -20,8 +20,6 @@ class PokerCalculator
     @outcome = Array.new(10) { Array.new(11) { 0 }}
     @aflag = Array.new(52) { false }
     @player_count = 0
-    puts "Preparing Super Poker Hand Analysis"
-
     @hand_rank = Array.new(2598960)
     prepare_data
   end
@@ -35,13 +33,16 @@ class PokerCalculator
     pcards = player_set.collect { |p| [card_to_val(p[0]), card_to_val(p[1])] }
     ccards = (community || []).collect { |c| card_to_val(c) }
     fcards = (folded || []).collect { |f| card_to_val(f) }
+    if !fcards 
+      fcards = []
+    end
     analyze_scenario(pcount, pcards, ccards, fcards)
   end
 
   def card_to_val(card)
     card_val = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"].index(card[0])
     suit_val = ["♣", "♦", "♥", "♠"].index(card[1])
-    return ((13*suit_val) + card_val)
+    return ((13*suit_val) + card_val) unless suit_val == nil || card_val == nil
   end
 
   def analyze_scenario(player_count, player_cards, community_cards, folded_cards)
@@ -59,9 +60,11 @@ class PokerCalculator
     @community_cards.each do |k|
       @aflag[k] = true
     end
-
+  
     folded_cards.each do |l|
-      @aflag[l] = true
+      if l.is_a?(Fixnum)
+        @aflag[l] = true
+      end
     end
 
     @top_hands = Array.new(player_count) { 0 }

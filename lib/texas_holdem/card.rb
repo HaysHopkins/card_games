@@ -44,8 +44,6 @@ class Card
     "#{face_display}#{suit_display}"
   end
 
-  private
-
   def face_display
     self.class.face_displays[face]
   end

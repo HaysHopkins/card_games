@@ -25,6 +25,8 @@ class Hand
     @extra_cards = ExtraCards.new
   end
 
+  #The one exception is that if two players utilize the same card value in their hand along with the same 4 cards on the table
+  #I think it is check the 5th card of the players to tie break whereas it should just call it a tie
   def <=> anOther
     return value <=> anOther.value unless value == anOther.value
     self.set_extra_cards

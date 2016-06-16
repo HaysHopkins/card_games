@@ -22,10 +22,22 @@ class Player
     @computer
   end
 
-  def get_chips amount
-    @chips = chips.to_s.to_i - amount
-    @current_bet = current_bet.to_s.to_i + amount
-    amount
+  def get_bet_from_player bet
+    if bet > @chips
+      bet = @chips.to_s.to_i
+      @current_bet = current_bet.to_s.to_i + bet
+      @chips = 0
+    else
+      @chips = chips.to_s.to_i - bet
+      @current_bet = current_bet.to_s.to_i + bet
+    end
+    bet
+  end
+
+  def get_winnings_from_player
+    total_bet = @total_bet
+    @total_bet = 0
+    total_bet
   end
 
   def to_s
