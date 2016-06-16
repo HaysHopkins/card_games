@@ -86,6 +86,7 @@ class TexasHoldemDealer
       end
 
       winnings = distribute_pot(winner)
+      break if winnings == 0
       if counter == 1
         puts "", "******* #{winner.name} wins #{winnings} with #{winning_hand.name}. *******", ""
       else
