@@ -79,10 +79,12 @@ class TexasHoldemDealer
         end
       end
 
-      if winner == @table
+      if winner == @table && @currently_in_game.length > 1
         return_bets
         puts "", "******* The pot is split. *******", ""
         break
+      elsif winner == table && @currently_in_game.length == 1
+        winner = @currently_in_game.first
       end
 
       winnings = distribute_pot(winner)
@@ -95,7 +97,6 @@ class TexasHoldemDealer
     end
   end
 
-  # Implement the small and big blind (think about starting chip amount and bet sizes to make sure game can continue for a decent time period)
   def continue_playing?
     input = ''
     while(input != 'yes' && input != 'no')
