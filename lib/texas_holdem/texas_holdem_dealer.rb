@@ -83,7 +83,7 @@ class TexasHoldemDealer
         return_bets
         puts "", "******* The pot is split. *******", ""
         break
-      elsif winner == table && @currently_in_game.length == 1
+      elsif winner == @table && @currently_in_game.length == 1
         winner = @currently_in_game.first
       end
 
