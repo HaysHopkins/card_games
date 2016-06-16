@@ -62,7 +62,7 @@ class TexasHoldemDealer
   def end_round
     counter = 0
     puts "", "", " Final Hands:"
-    display_cards(true)
+    display_cards(true) unless @currently_in_game.length < 2
 
     while (@pot.pot > 0 && counter < 3)
       counter += 1
