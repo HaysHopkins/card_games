@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-puts $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 Dir.chdir(File.dirname(__FILE__))
 
 require 'texas_holdem/player'
