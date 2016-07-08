@@ -6,7 +6,12 @@ require 'texas_holdem/player'
 require 'texas_holdem/texas_holdem_dealer'
 puts "", ""
 puts "Enter your user name (Less than 10 characters -- we need to keep it pretty): "
-player_name = $stdin.gets.strip[0...10]
+player_name = $stdin.gets.strip
+
+if player_name.length > 10
+  puts "Try again."
+  player_name = $stdin.gets.strip[0...10]
+end
 
 players = []
 players << Player.new(player_name, false)
